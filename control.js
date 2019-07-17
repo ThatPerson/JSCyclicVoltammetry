@@ -23,6 +23,10 @@ var ctx = document.getElementById('myChart').getContext('2d');
 				            position: 'bottom',
 				            gridLines: {
     									display: false
+  									},
+  									ticks: {
+  										min: -3,
+  										max: 3
   									}
 				        }],
 								yAxes: [{
@@ -43,8 +47,8 @@ var ctx = document.getElementById('myChart').getContext('2d');
 		reactor = new Reactor(30, {"ox": 1000, "red": 0}, 5, 1, 0.01, 
 		[{"ox": "ox", "red": "red", "pot": 0}]);
 		var dt = 0.05;
-		var ereactions = document.getElementById("ereactions");
-		var contents = document.getElementById("contents");
+		var ereactions = document.getElementById("ereactions2");
+		var contents = document.getElementById("contents2");
 		function populate_lists() {
 			while (ereactions.firstChild) {
 				ereactions.removeChild(ereactions.firstChild);
@@ -52,8 +56,23 @@ var ctx = document.getElementById('myChart').getContext('2d');
 			ere = reactor.e_reactions;
 			var i;
 			for (i = 0; i < ere.length; i++) {
-				var node = document.createElement("LI");
-				node.innerHTML = (ere[i].ox + " -("+ere[i].pot+"V)-> " + ere[i].red + "<a href='javascript:remove_ereaction("+i+")'>(delete)</a>");
+				/* There are definitely cleaner ways of doing this (such as looping over keys). */
+				var node = document.createElement("TR");
+				var er_id = document.createElement("TH");
+				var er_ox = document.createElement("TD");
+				var er_red = document.createElement("TD");
+				var er_pot = document.createElement("TD");
+				var er_cont = document.createElement("TD");
+				er_id.appendChild(document.createTextNode(i));
+				er_ox.appendChild(document.createTextNode(ere[i].ox));
+				er_red.appendChild(document.createTextNode(ere[i].red));
+				er_pot.appendChild(document.createTextNode(ere[i].pot));
+				er_cont.innerHTML = "<a href='javascript:remove_ereaction("+i+")'>(delete)</a>";
+				node.appendChild(er_id);
+				node.appendChild(er_ox);
+				node.appendChild(er_red);
+				node.appendChild(er_pot);
+				node.appendChild(er_cont);
 				ereactions.appendChild(node);
 			}
 			
@@ -64,8 +83,19 @@ var ctx = document.getElementById('myChart').getContext('2d');
 			erek = Object.keys(ere);
 			var z;
 			for (z = 0; z < erek.length; z++) {
-				var node = document.createElement("LI");
-				node.innerHTML = (erek[z] + " ("+ere[erek[z]]+") <a href='javascript:remove_contents(\""+erek[z]+"\")'>(delete)</a>");
+				var node = document.createElement("TR");
+				var ct_id = document.createElement("TH");
+				var ct_name = document.createElement("TD");
+				var ct_val = document.createElement("TD");
+				var ct_cont = document.createElement("TD");
+				ct_id.appendChild(document.createTextNode(z));
+				ct_name.appendChild(document.createTextNode(erek[z]));
+				ct_val.appendChild(document.createTextNode(ere[erek[z]]));
+				ct_cont.innerHTML="<a href='javascript:remove_contents(\""+erek[z]+"\")'>(delete)</a>";
+				node.appendChild(ct_id);
+				node.appendChild(ct_name);
+				node.appendChild(ct_val);
+				node.appendChild(ct_cont);
 				contents.appendChild(node);
 			}
 		}
@@ -130,6 +160,8 @@ var ctx = document.getElementById('myChart').getContext('2d');
 			vl_slider.oninput = function() {
 				reactor.voltage_lim = this.value/10;
 				vl_value.innerHTML = this.value/10;
+				chart.options.scales.xAxes[0].ticks.min = -reactor.voltage_lim;
+				chart.options.scales.xAxes[0].ticks.max = reactor.voltage_lim;
 				//output.innerHTML = this.value;
 			} 
 			reset.onclick = function() {
@@ -143,7 +175,7 @@ var ctx = document.getElementById('myChart').getContext('2d');
 			}
 			
 			var expor = document.getElementById("export");
-			var exported = document.getElementById("exported");
+			var exported = document.getElementById("imported");
 			expor.onclick = function () {
 				var stp = dt+","+reactor.d_coeff+","+reactor.voltage_lim;
 				var rct = []
@@ -160,7 +192,7 @@ var ctx = document.getElementById('myChart').getContext('2d');
 				}
 				ctn = cnt.join(";");
 				out = [stp, rtn, ctn].join(":");
-				exported.innerHTML = out;
+				exported.value = out;
 			}
 			
 			var impor = document.getElementById("import");
@@ -194,7 +226,17 @@ var ctx = document.getElementById('myChart').getContext('2d');
 				dc_value.innerHTML = reactor.d_coeff;
 				vl_slider.value = reactor.voltage_lim * 10;
 				vl_value.innerHTML = reactor.voltage_lim;
+				chart.options.scales.xAxes[0].ticks.min = -reactor.voltage_lim;
+				chart.options.scales.xAxes[0].ticks.max = reactor.voltage_lim;
 				
  
 				
 			}
+			dt_slider.value = dt * 100;
+				dt_value.innerHTML = dt;
+				dc_slider.value = reactor.d_coeff*100;
+				dc_value.innerHTML = reactor.d_coeff;
+				vl_slider.value = reactor.voltage_lim * 10;
+				vl_value.innerHTML = reactor.voltage_lim;
+				chart.options.scales.xAxes[0].ticks.min = -reactor.voltage_lim;
+				chart.options.scales.xAxes[0].ticks.max = reactor.voltage_lim;

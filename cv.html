@@ -4,28 +4,92 @@
 		<title>Cyclic Voltammogram</title>
 		<script src="cv.js"></script> 
 		<script src="Chart.min.js"></script>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
 	</head>
 	<body>
-		<div style="width:800px; height:600px;">
-			<canvas id="myChart" style="width:800px!important; height:600px!important;"></canvas>
-		</div>
-		dt <input type="range" min="0" max="100" value="5" class="slider" id="dt"><b id="dtv"></b><br>
-		dc <input type="range" min="0" max="33" value="33" class="slider" id="dc"><b id="dcv"></b> <br>
-		vl <input type="range" min="0" max="300" value="50" class="slider" id="vl"><b id="vlv"></b><br>
-		<button type="button" id="reset">Reset</button> 
-		<button type="button" id="start">Start</button> 
-		<button type="button" id="stop">Stop</button> 
-		<br>
-		<b>E Reactions</b>
-		<ul id="ereactions"></ul>
-		<input type="text" placeholder="Ox" id="ox"><input type="text" placeholder="Red" id="red"><input type="number" placeholder="Potential" id="pot"><button type="button" id="add">Add E Reaction</button>
-		<br>
-		<b>Contents</b>
-		<ul id="contents"></ul>
-		<input type="text" placeholder="Name" id="ident"><input type="number" placeholder="Quantity" id="quant"><button type="button" id="addc">Add Contents</button><i>Warning will reset cell contents</i><br>
+		<h1>Cyclic Voltammogram Simulator</h1>
+		<div class="row">
+			<div class="col-sm-6">
+				<div style="width:100%; ">
+					<canvas id="myChart" style="width:100%!important; "></canvas>
+				</div>
+				<p>This is a very simplified Cyclic Voltammogram model. It cannot yet simulate coupled chemical reactions (eg EC' reactions). The impact of varying the time step (~scan rate, high scan rate: Randles–Sevcik equation) and diffusion coefficient (eg moving from a surface only system to one with diffusion) can be modelled.</p>
+				<p>By adding new electrochemical reactions and varying the initial contents, multiple reactions can be observed. For example, using the following model;</p>
+				<pre>0.33,0.2,30:A,B,20;B,C,5;C,D,0;D,E,-25:A,1000;B,0;C,0;D,0;E,0</pre>
+				<small class="form-text text-muted">Import this using the textbox and import button</small>
+				<p>A series of reactions can be observed. If other reactions are added or removed then these will affect the CV being generated.</p>
+			</div>
+			<div class="col-sm-6">
+				Time Step <b id="dtv">0.5</b><input type="range" min="0" max="100" value="50" class="slider" id="dt"><br>
+				Diffusion Coefficient <b id="dcv">0.33</b> <input type="range" min="0" max="33" value="33" class="slider" id="dc"> <br>
+				Voltage Limits <b id="vlv">5</b> <input type="range" min="0" max="300" value="50" class="slider" id="vl"><br>
+				<button class="btn btn-danger" type="button" id="reset">Reset</button> 
+				<button class="btn btn-success" type="button" id="start">Start</button> 
+				<button class="btn btn-default" type="button" id="stop">Stop</button> 
+				<br>
+				<h3>Electrochemical Reactions</h3>
+				
+				<table class="table">
+					<thead>
+						<tr>
+							<th>#</th>
+							<th>Oxidized</th>
+							<th>Reduced</th>
+							<th>Potential / V</th>
+							<th>Options</th>
+						</tr>
+					</thead>
+					<tbody id="ereactions2">
+						
+					</tbody>
+					<tfoot>
+						<tr>
+							<th>New</th>
+							<th><input class="form-control" style="width:100%" type="text" placeholder="Ox" id="ox"></th>
+							<th><input class="form-control" style="width:100%" type="text" placeholder="Red" id="red"></th>
+							<th><input class="form-control" style="width:100%" type="number" placeholder="Potential" id="pot"></th>
+							<th><button class="btn btn-default" style="width:100%" type="button" id="add">Add E Reaction</button></th>
+						</tr>
+					</tfoot>
+				</table>
+			
+				<h3>Contents</h3>
+				
+				<table class="table">
+					<thead>
+						<tr>
+							<th>#</th>
+							<th>Name</th>
+							<th>Initial Quantity</th>
+							<th>Options</th>
+						</tr>
+					</thead>
+					<tbody id="contents2">
+						
+					</tbody>
+					<tfoot>
+						<tr>
+							<th>New</th>
+							<th><input class="form-control" style="width:100%" type="text" placeholder="Name" id="ident"></th>
+							<th><input class="form-control" style="width:100%" type="number" placeholder="Quantity" id="quant"></th>
+						
+							<th><button class="btn btn-default" style="width:100%" type="button" id="addc">Add Contents</button></th>
+						</tr>
+					</tfoot>
+				</table>
+				<small class="form-text text-muted">This will reset the cell contents</small>
+				
 		
-		<button id="export">Export</button><i id="exported"></i><br>
-		<input type="text" placeholder="Import str" id="imported"><button id="import">Import</button>
+				<table class="table">
+				<th>
+				<td><button class="btn btn-default" id="export">Export</button></td>
+				<td><input class="form-control" type="text" placeholder="Import str" id="imported"></td>
+				<td><button class="btn btn-default" id="import">Import</button></td>
+				</th></table>
+			</div>
+		</div>
 		
 		<script src="control.js"></script>
 	</body>
