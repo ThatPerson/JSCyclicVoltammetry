@@ -1,3 +1,5 @@
+var n_cells = 30;
+
 var ctx = document.getElementById('myChart').getContext('2d');
 
 		var chart = new Chart(ctx, {
@@ -43,8 +45,62 @@ var ctx = document.getElementById('myChart').getContext('2d');
         	}
 				}
 		});
+		
+var ctx2 = document.getElementById('concentrations').getContext('2d');
 
-		reactor = new Reactor(30, {"ox": 1000, "red": 0}, 5, 1, 0.01, 
+		var chart2 = new Chart(ctx2, {
+				type: 'line',
+				data: {
+				    datasets: [{
+				        label: '',
+				        fill: false,
+				        pointRadius: 0,
+				        borderColor: "blue",
+				        borderWidth: 2,
+				        data: []
+				    },
+				    {
+				        label: '',
+				        fill: false,
+				        pointRadius: 0,
+				        borderColor: "red",
+				        borderWidth: 2,
+				        data: []
+				    }]
+				},
+				options: {
+					legend: {
+            display: false
+            },
+					fill:false,
+				    scales: {
+				        xAxes: [{
+				            type: 'linear',
+				            position: 'bottom',
+				            gridLines: {
+    									display: true
+  									},
+  									ticks: {
+  										min: 0,
+  										max: n_cells
+  									}
+				        }],
+								yAxes: [{
+									display:true,
+									gridLines: {
+										drawBorder: true
+									}
+								}]
+				    },
+				    elements: {
+            	line: {
+                tension: 0 // disables bezier curves
+            }
+        	}
+				}
+		});
+
+		reactor = new Reactor(n_cells, {"ox": 1000, "red": 0}, 5, 1, 0.01, 
 		[{"ox": "ox", "red": "red", "pot": 0}]);
 		var dt = 0.05;
 		var ereactions = document.getElementById("ereactions2");
@@ -134,6 +190,13 @@ var ctx = document.getElementById('myChart').getContext('2d');
 
 			chart.data.datasets[0].data.push({x: V, y: I});
 			chart.update();
+			chart2.data.datasets[0].data = [];
+			chart2.data.datasets[1].data = [];
+			for (var i = 0; i < n_cells; i++) {
+				chart2.data.datasets[0].data.push({x: i, y: reactor.cells[i].contents.ox});
+				chart2.data.datasets[1].data.push({x: i, y: reactor.cells[i].contents.red});
+			}
+			chart2.update();
 			reactor.diffuse(dt);
 		}
 		
